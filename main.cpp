@@ -57,7 +57,7 @@ void correctnessTest() {
 }
 
 void profermanceTest() {
-    constexpr int kTestNum = 2000;
+    constexpr int kTestNum = 200000;
     std::vector<int> init_array(kTestNum);
     std::vector<int> test_array(kTestNum);
     std::default_random_engine random;
