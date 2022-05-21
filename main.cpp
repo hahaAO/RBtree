@@ -78,7 +78,6 @@ void profermanceTest() {
             t1.insert({init_array[i], 1});
         }
     }
-
     {
         VgdStd::Timer timer("VgdStd插入" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {
@@ -86,6 +85,18 @@ void profermanceTest() {
         }
     }
 
+    {
+        VgdStd::Timer timer("std查找" + std::to_string(kTestNum) + "次");
+        for (int i = 0; i < kTestNum; ++i) {
+            t1.find(test_array[i]);
+        }
+    }
+    {
+        VgdStd::Timer timer("VgdStd查找" + std::to_string(kTestNum) + "次");
+        for (int i = 0; i < kTestNum; ++i) {
+            t2.find(test_array[i]);
+        }
+    }
 
     {
         VgdStd::Timer timer("std删除" + std::to_string(kTestNum) + "次");
@@ -93,7 +104,6 @@ void profermanceTest() {
             t1.erase(test_array[i]);
         }
     }
-
     {
         VgdStd::Timer timer("VgdStd删除" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {

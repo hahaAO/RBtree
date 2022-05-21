@@ -10,14 +10,14 @@
 namespace VgdStd {
     class Timer {
     private:
-        decltype(std::chrono::system_clock::now()) start_time_;
+        decltype(std::chrono::high_resolution_clock ::now()) start_time_;
         std::string task_name_;
 
     public:
-        Timer() : start_time_(std::chrono::system_clock::now()) {}
+        Timer() : start_time_(std::chrono::high_resolution_clock ::now()) {}
 
         template<typename T>
-        Timer(T &&task_name) : start_time_(std::chrono::system_clock::now()),
+        Timer(T &&task_name) : start_time_(std::chrono::high_resolution_clock ::now()),
                                task_name_(std::forward<T>(task_name)) {}
 
 
