@@ -11,7 +11,7 @@
 
 二十万次:
 
-![img_1.png](doc/test_1.png)
+![img.png](doc/test_1.png)
 
 两百万次:
 
