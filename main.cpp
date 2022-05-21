@@ -2,63 +2,107 @@
 #include "RBtree.h"
 #include "tool.h"
 
+template<typename k_t, typename v_t>
+void EqualTest(const std::map<k_t, v_t> &t1, const VgdStd::RBtree<k_t, v_t> &t2) {
+    auto elements = t2.OutElement();
+    int element_index = 0;
+    for (auto kv: t1) {
+        assert(kv.first == elements[element_index].first);
+        ++element_index;
+    }
+}
 
 void correctnessTest() {
-    std::map<int, int> t1;
-    vgd::RBtree<int, int> t2;
+    constexpr int kTestNum = 200;
+
+    std::vector<int> init_array(kTestNum);
+    std::vector<int> test_array(kTestNum);
 
     std::default_random_engine random;
-    std::uniform_int_distribution<int> dis1(0, 100);
+    std::uniform_int_distribution<int> dis1(0, kTestNum);
+    std::uniform_int_distribution<int> dis2(0, kTestNum);
 
-    for (int i = 0; i < 20; ++i) {
-        auto randomNum = dis1(random);
-
-        t1.insert({randomNum, 1});
-        t2.insert({randomNum, 1});
+    for (int i = 0; i < kTestNum; ++i) {
+        init_array[i] = dis1(random);
+        test_array[i] = dis2(random);
     }
 
-    t2.print();
+    std::map<int, int> t1;
+    VgdStd::RBtree<int, int> t2;
 
-    for (auto kv: t1) {
-        std::cout << " " << kv.first << " ";
+    for (int i = 0; i < kTestNum; ++i) {
+        t1.insert({init_array[i], 1});
+        t2.insert({init_array[i], 1});
+//        EqualTest(t1, t2);
     }
 
-    std::cout << std::endl;
+    std::cout << "插入功能测试通过" << std::endl;
 
+    for (int i = 0; i < kTestNum; ++i) {
+        auto result_1 = t1.find(test_array[i]);
+        auto result_2 = t2.find(test_array[i]);
+        assert((result_1 != t1.end()) == result_2.first);
+//        EqualTest(t1, t2);
+    }
+    std::cout << "查找功能测试通过" << std::endl;
+
+    for (int i = 0; i < kTestNum; ++i) {
+        t1.erase(test_array[i]);
+        t2.erase(test_array[i]);
+        EqualTest(t1, t2);
+    }
+
+    std::cout << "删除功能测试通过" << std::endl;
 }
 
 void profermanceTest() {
-    constexpr int testNum = 100000;
-    int *arr = new int[testNum];// 直接在栈里分配空间会崩溃,window 的函数栈空间大小为1MB, Linux为8MB
+    constexpr int kTestNum = 200000;
+    std::vector<int> init_array(kTestNum);
+    std::vector<int> test_array(kTestNum);
     std::default_random_engine random;
-    std::uniform_int_distribution<int> dis1(0, testNum);
+    std::uniform_int_distribution<int> dis1(0, kTestNum);
+    std::uniform_int_distribution<int> dis2(0, kTestNum);
 
-    for (int i = 0; i < testNum; ++i) {
-        arr[i] = dis1(random);
+    for (int i = 0; i < kTestNum; ++i) {
+        init_array[i] = dis1(random);
+        test_array[i] = dis2(random);
     }
 
     std::map<int, int> t1;
-    vgd::RBtree<int, int> t2;
+    VgdStd::RBtree<int, int> t2;
 
     {
-        vgd::timer timer1;
-        for (int i = 0; i < testNum; ++i) {
-            t1.insert({arr[i], 1});
+        VgdStd::Timer timer("std插入" + std::to_string(kTestNum) + "次");
+        for (int i = 0; i < kTestNum; ++i) {
+            t1.insert({init_array[i], 1});
         }
     }
 
     {
-        vgd::timer timer1;
-        for (int i = 0; i < testNum; ++i) {
-            t2.insert({arr[i], 1});
+        VgdStd::Timer timer("VgdStd插入" + std::to_string(kTestNum) + "次");
+        for (int i = 0; i < kTestNum; ++i) {
+            t2.insert({init_array[i], 1});
         }
     }
 
+
+    {
+        VgdStd::Timer timer("std删除" + std::to_string(kTestNum) + "次");
+        for (int i = 0; i < kTestNum; ++i) {
+            t1.erase(test_array[i]);
+        }
+    }
+
+    {
+        VgdStd::Timer timer("VgdStd删除" + std::to_string(kTestNum) + "次");
+        for (int i = 0; i < kTestNum; ++i) {
+            t2.erase(test_array[i]);
+        }
+    }
 }
 
 int main() {
     correctnessTest();
-
     profermanceTest();
     return 0;
 }
