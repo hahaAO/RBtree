@@ -88,10 +88,12 @@ namespace VgdStd {
     template<typename k_t, typename v_t>
     std::vector<typename RBtree<k_t, v_t>::Element_T> RBtree<k_t, v_t>::OutElement() const {
         std::vector<Element_T> elements;
-        auto element_in_func = [&](const Element_T &element) {
-            elements.template emplace_back(element);
-        };
-        root_->inorder(element_in_func);
+        if (root_ != nullptr) {
+            auto element_in_func = [&](const Element_T &element) {
+                elements.template emplace_back(element);
+            };
+            root_->inorder(element_in_func);
+        }
         return elements;
     }
 }

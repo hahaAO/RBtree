@@ -407,10 +407,9 @@ namespace VgdStd {
 
     template<typename k_t, typename v_t>
     void RBtreeNode<k_t, v_t>::inorder(std::function<void(const Element_T &)> do_something) {
-        if (this == nullptr) return;
-        left_->inorder(do_something);
+        if (left_ != nullptr) left_->inorder(do_something);
         do_something(data_);
-        right_->inorder(do_something);
+        if (right_ != nullptr)right_->inorder(do_something);
     }
 
 

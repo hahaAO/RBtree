@@ -47,13 +47,15 @@ namespace VgdStd {
         inline bool dataKeyComp(const Element_T &e) const { return data_.first < e.first; }
 
         inline bool parentIsNull() { return parent_ == nullptr; }
-
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
         inline bool AmIRed() { // 空节点等于黑色，判断颜色时用这个判断
             if (this == nullptr) {
                 return false;
             }
             return color_ == RED;// todo: 禁用color的==符号
         }
+#pragma GCC pop_options
 
         inline bool AmILeft() {
             assert(!parentIsNull());
@@ -97,7 +99,7 @@ namespace VgdStd {
             RR(root_node);
         }
 
-        inline NodePtr_T ExchangeColorAndLR(NodePtr_T &root_node) {// 换色左旋
+        inline void ExchangeColorAndLR(NodePtr_T &root_node) {// 换色左旋
             color_ = parent_->color_;
             right_->color_ = BLACK;
             parent_->color_ = BLACK;
@@ -105,7 +107,7 @@ namespace VgdStd {
             root_node->color_ = BLACK;
         }
 
-        inline NodePtr_T ExchangeColorAndRR(NodePtr_T &root_node) { // 换色右旋
+        inline void ExchangeColorAndRR(NodePtr_T &root_node) { // 换色右旋
             color_ = parent_->color_;
             left_->color_ = BLACK;
             parent_->color_ = BLACK;
