@@ -20,17 +20,15 @@ namespace VgdStd {
 
         std::vector<Element_T> OutElement() const;
 
-        void print() const;
+        void Print() const;
 
-        bool insert(std::pair<k_t, v_t>);
+        bool Insert(std::pair<k_t, v_t>);
 
-        bool insert(k_t key, v_t value) { return insert(std::pair<k_t, v_t>(key, value)); }
+        bool Insert(k_t key, v_t value) { return Insert(std::pair<k_t, v_t>(key, value)); }
 
-        std::pair<bool, NodePtr_T> find(const k_t &) const;
+        std::pair<bool, NodePtr_T> Find(const k_t &) const;
 
-        bool erase(const k_t &);
-
-        bool erase(NodePtr_T);
+        bool Erase(const k_t &);
 
     private:
         NodePtr_T root_ = nullptr;

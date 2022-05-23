@@ -9,7 +9,7 @@
 
 namespace VgdStd {
     template<typename k_t, typename v_t>
-    std::pair<bool, typename RBtree<k_t, v_t>::NodePtr_T> RBtree<k_t, v_t>::find(const k_t &k) const {
+    std::pair<bool, typename RBtree<k_t, v_t>::NodePtr_T> RBtree<k_t, v_t>::Find(const k_t &k) const {
         using res_t = std::pair<bool, NodePtr_T>; // 返回值类型
         NodePtr_T current = this->root_; // 当前指针
         while (current != nullptr) {
@@ -20,13 +20,13 @@ namespace VgdStd {
             } else {
                 current = current->right_; // 比当前节点大，找右子结点
             }
-        };
+        }
         // 遍历完没找到
         return res_t({false, nullptr});
     }
 
     template<typename k_t, typename v_t>
-    bool RBtree<k_t, v_t>::insert(std::pair<k_t, v_t> k) {
+    bool RBtree<k_t, v_t>::Insert(std::pair<k_t, v_t> k) {
 
         using node_t = RBtreeNode<k_t, v_t>;
 
@@ -37,9 +37,9 @@ namespace VgdStd {
 
         NodePtr_T current = this->root_; // 当前指针
         while (true) {
-            if (current->dataKeyEqual(k)) {  // 找到相同节点，插入失败
+            if (current->DataKeyEqual(k)) {  // 找到相同节点，插入失败
                 return false;
-            } else if (current->dataKeyComp(k)) {// 比当前节点大，找右子结点
+            } else if (current->DataKeyComp(k)) {// 比当前节点大，找右子结点
                 if (current->right_ == nullptr) { // 右子结点已为空，可插入
                     current->right_ = new node_t(k.first, k.second, node_t::RED);
                     current->right_->parent_ = current;
@@ -58,31 +58,29 @@ namespace VgdStd {
             }
         }
 
-        current->sort(root_);// 指定节点开始重排
-        root_->color_ = RBtreeNode<k_t, v_t>::BLACK;
+        current->FixInsert(root_);// 指定节点开始修复
         return true;
     }
 
 
     template<typename k_t, typename v_t>
-    void RBtree<k_t, v_t>::print() const {
+    void RBtree<k_t, v_t>::Print() const {
         std::vector<NodePtr_T> queque({root_});
-        RBtreeNode<k_t, v_t>::loopPrint(queque);
+        auto element_in_func = [&](const NodePtr_T &node_ptr) {
+            node_ptr->PrintKey();
+        };
+
+        RBtreeNode<k_t, v_t>::LevelTraversal(queque, element_in_func);
     }
 
     template<typename k_t, typename v_t>
-    bool RBtree<k_t, v_t>::erase(RBtree::NodePtr_T bad_node) {
-        bad_node->Erase(root_);
-        return true;
-    }
-
-    template<typename k_t, typename v_t>
-    bool RBtree<k_t, v_t>::erase(const k_t &key) {
-        auto find_result = find(key);
+    bool RBtree<k_t, v_t>::Erase(const k_t &key) {
+        auto find_result = Find(key);
         if (!find_result.first) {// 没找到，删不了
             return false;
         }
-        return erase(find_result.second);
+        find_result.second->Erase(root_);
+        return true;
     }
 
     template<typename k_t, typename v_t>
@@ -92,7 +90,7 @@ namespace VgdStd {
             auto element_in_func = [&](const Element_T &element) {
                 elements.template emplace_back(element);
             };
-            root_->inorder(element_in_func);
+            root_->InorderTraversal(element_in_func);
         }
         return elements;
     }

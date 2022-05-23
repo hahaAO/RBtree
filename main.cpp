@@ -32,7 +32,7 @@ void correctnessTest() {
 
     for (int i = 0; i < kTestNum; ++i) {
         t1.insert({init_array[i], 1});
-        t2.insert({init_array[i], 1});
+        t2.Insert({init_array[i], 1});
     }
     EqualTest(t1, t2);
 
@@ -40,7 +40,7 @@ void correctnessTest() {
 
     for (int i = 0; i < kTestNum; ++i) {
         auto result_1 = t1.find(test_array[i]);
-        auto result_2 = t2.find(test_array[i]);
+        auto result_2 = t2.Find(test_array[i]);
         assert((result_1 != t1.end()) == result_2.first);
     }
     EqualTest(t1, t2);
@@ -49,7 +49,7 @@ void correctnessTest() {
 
     for (int i = 0; i < kTestNum; ++i) {
         t1.erase(test_array[i]);
-        t2.erase(test_array[i]);
+        t2.Erase(test_array[i]);
     }
     EqualTest(t1, t2);
 
@@ -81,7 +81,7 @@ void profermanceTest() {
     {
         VgdStd::Timer timer("VgdStd插入" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {
-            t2.insert({init_array[i], 1});
+            t2.Insert({init_array[i], 1});
         }
     }
 
@@ -94,7 +94,7 @@ void profermanceTest() {
     {
         VgdStd::Timer timer("VgdStd查找" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {
-            t2.find(test_array[i]);
+            t2.Find(test_array[i]);
         }
     }
 
@@ -107,7 +107,7 @@ void profermanceTest() {
     {
         VgdStd::Timer timer("VgdStd删除" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {
-            t2.erase(test_array[i]);
+            t2.Erase(test_array[i]);
         }
     }
 }
