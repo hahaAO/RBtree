@@ -88,13 +88,14 @@ void profermanceTest() {
     {
         VgdStd::Timer timer("std查找" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {
-            t1.find(test_array[i]);
+            volatile auto e = t1.find(test_array[i]);// 防止被优化
         }
     }
     {
         VgdStd::Timer timer("VgdStd查找" + std::to_string(kTestNum) + "次");
         for (int i = 0; i < kTestNum; ++i) {
-            t2.Find(test_array[i]);
+            volatile auto e = t2.Find(test_array[i]);
+            e;// 防止被优化
         }
     }
 

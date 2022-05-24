@@ -11,7 +11,7 @@ namespace VgdStd {
     template<typename k_t, typename v_t>
     std::pair<bool, typename RBtree<k_t, v_t>::NodePtr_T> RBtree<k_t, v_t>::Find(const k_t &k) const {
         using res_t = std::pair<bool, NodePtr_T>; // 返回值类型
-        NodePtr_T current = this->root_; // 当前指针
+        NodePtr_T current = root_; // 当前指针
         while (current != nullptr) {
             if (current->data_.first == k) {  // 找到节点
                 return res_t({true, current});
@@ -35,7 +35,7 @@ namespace VgdStd {
             return true;
         }
 
-        NodePtr_T current = this->root_; // 当前指针
+        NodePtr_T current = root_; // 当前指针
         while (true) {
             if (current->DataKeyEqual(k)) {  // 找到相同节点，插入失败
                 return false;
@@ -58,7 +58,7 @@ namespace VgdStd {
             }
         }
 
-        current->FixInsert(root_);// 指定节点开始修复
+        current->FixInsert(root_);// 插入节点开始修复
         return true;
     }
 

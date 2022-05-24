@@ -119,8 +119,7 @@ namespace VgdStd {
     std::pair<bool, typename RBtreeNode<k_t, v_t>::NodePtr_T> RBtreeNode<k_t, v_t>::TryExchangeColor() {
         assert(!ParentIsNull() && !parent_->ParentIsNull()); // 根据红黑树的性质，默认为真
         // 染色的条件：自身为红色，父节点的兄弟为红色
-        if (PP_NODE != nullptr &&
-            PP_NODE->left_ != nullptr && PP_NODE->left_->color_ == RED &&
+        if (PP_NODE->left_ != nullptr && PP_NODE->left_->color_ == RED &&
             PP_NODE->right_ != nullptr && PP_NODE->right_->color_ == RED) {
             // 染色:颜色交换,保证爷节点以下满足红黑树
             PP_NODE->color_ = RED;
@@ -133,44 +132,44 @@ namespace VgdStd {
     }
 
     template<typename k_t, typename v_t>
-    void RBtreeNode<k_t, v_t>::tryLR(NodePtr_T &rootNode) {
+    void RBtreeNode<k_t, v_t>::tryLR(NodePtr_T &root_node) {
         assert(!ParentIsNull() && !parent_->ParentIsNull()); // 根据红黑树的性质，默认为真
 
         if (!parent_->AmILeft()) {// 爷父子同向结构，
-            DyeLR(rootNode); // 触发染色左旋，直接修复
+            FixInsertDyeLR(root_node); // 触发染色左旋，直接修复
         } else {// 爷父子逆向结构
-            auto nextNode = LR(rootNode); // 触发非染色左旋
-            nextNode->DyeRR(rootNode);
+            auto nextNode = LR(root_node); // 触发非染色左旋，修复成同向结构
+            nextNode->FixInsertDyeRR(root_node);// 触发染色右旋，直接修复
         }
     }
 
     template<typename k_t, typename v_t>
-    inline void RBtreeNode<k_t, v_t>::DyeLR(NodePtr_T &rootNode) {
+    inline void RBtreeNode<k_t, v_t>::FixInsertDyeLR(NodePtr_T &root_node) {
         // 先调整颜色
         parent_->color_ = BLACK;
         PP_NODE->color_ = RED;
-        parent_->LR(rootNode);
+        parent_->LR(root_node);
     }
 
 
     template<typename k_t, typename v_t>
-    void RBtreeNode<k_t, v_t>::tryRR(NodePtr_T &rootNode) {
+    void RBtreeNode<k_t, v_t>::tryRR(NodePtr_T &root_node) {
         assert(!ParentIsNull() && !parent_->ParentIsNull()); // 根据红黑树的性质，默认为真
 
         if (parent_->AmILeft()) {// 爷父子同向结构，
-            DyeRR(rootNode); // 触发染色右旋，直接修复
+            FixInsertDyeRR(root_node); // 触发染色右旋，直接修复
         } else {// 爷父子逆向结构
-            auto nextNode = RR(rootNode); // 非染色右旋，修复成同向结构
-            nextNode->DyeLR(rootNode);// 触发染色右旋，直接修复
+            auto nextNode = RR(root_node); // 非染色右旋，修复成同向结构
+            nextNode->FixInsertDyeLR(root_node);// 触发染色左旋，直接修复
         }
     }
 
     template<typename k_t, typename v_t>
-    inline void RBtreeNode<k_t, v_t>::DyeRR(NodePtr_T &rootNode) {
+    inline void RBtreeNode<k_t, v_t>::FixInsertDyeRR(NodePtr_T &root_node) {
         // 操作同染色左旋对称
         parent_->color_ = BLACK;
         PP_NODE->color_ = RED;
-        parent_->RR(rootNode);
+        parent_->RR(root_node);
     }
 
     template<typename k_t, typename v_t>
@@ -241,7 +240,7 @@ namespace VgdStd {
             return;
         }
 
-        if (IsRed(right_)) {
+        if (IsRed(right_)) {// 情况5
             right_->color_ = BLACK;
             color_ = RED;
             right_->LR(root_node);
@@ -249,14 +248,14 @@ namespace VgdStd {
         } else {
             auto rla = IsRed(right_->left_);
             auto rra = IsRed(right_->right_);
-            if (rra) { // 右子的右子为红，符合情况2，直接修复
-                right_->ExchangeColorAndLR(root_node);// 修复成功
-            } else if (rla) {// 右子的左子为红，换色左旋
+            if (rra) { // 情况2，直接修复
+                right_->FixEraseDyeLR(root_node);// 修复成功
+            } else if (rla) {// 情况3
                 right_->color_ = RED;
                 right_->left_->color_ = BLACK;
                 right_->left_->RR(root_node);
                 FixLeft(root_node);// 递归修复
-            } else {// 右子的双子为黑,直接把右子染红
+            } else {// 情况4
                 right_->color_ = RED;
                 // 染红后左右子hb平衡了, 但对于父节点来说，我的hb比兄弟hb少1
                 if (ParentIsNull()) {// 我是根 没有兄弟，直接染黑
@@ -288,7 +287,7 @@ namespace VgdStd {
             auto lla = IsRed(left_->left_);
             auto lra = IsRed(left_->right_);
             if (lla) {
-                left_->ExchangeColorAndRR(root_node);
+                left_->FixEraseDyeRR(root_node);
             } else if (lra) {
                 left_->color_ = RED;
                 left_->right_->color_ = BLACK;
@@ -315,7 +314,7 @@ namespace VgdStd {
     }
 
     template<typename k_t, typename v_t>
-    void RBtreeNode<k_t, v_t>::ExchangeColorAndLR(RBtreeNode::NodePtr_T &root_node) {
+    void RBtreeNode<k_t, v_t>::FixEraseDyeLR(RBtreeNode::NodePtr_T &root_node) {
         color_ = parent_->color_;
         right_->color_ = BLACK;
         parent_->color_ = BLACK;
@@ -324,12 +323,20 @@ namespace VgdStd {
     }
 
     template<typename k_t, typename v_t>
-    void RBtreeNode<k_t, v_t>::ExchangeColorAndRR(RBtreeNode::NodePtr_T &root_node) {
+    void RBtreeNode<k_t, v_t>::FixEraseDyeRR(RBtreeNode::NodePtr_T &root_node) {
         color_ = parent_->color_;
         left_->color_ = BLACK;
         parent_->color_ = BLACK;
         RR(root_node);
         root_node->color_ = BLACK;
+    }
+
+    template<typename k_t, typename v_t>
+    bool RBtreeNode<k_t, v_t>::IsRed(RBtreeNode::NodePtr_T node_ptr) {
+        if (node_ptr == nullptr) {
+            return false;
+        }
+        return node_ptr->color_ == RED;
     }
 
 
